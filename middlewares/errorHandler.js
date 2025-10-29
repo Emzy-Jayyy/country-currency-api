@@ -1,42 +1,44 @@
 // Global error handler
-module.exports.errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res, next) => {
   console.error('Error:', err);
 
-  // Handle custom errors with statusCode
+  // Handle custom errors with statusCode (from services)
   if (err.statusCode) {
-    return res.status(err.statusCode).json({
-      error: err.error || 'An error occurred',
-      details: err.details
-    });
+    const response = {
+      error: err.error
+    };
+    
+    // Add details if provided
+    if (err.details) {
+      response.details = err.details;
+    }
+    
+    return res.status(err.statusCode).json(response);
   }
 
-  // Handle database errors
+  // Handle database duplicate entry errors
   if (err.code === 'ER_DUP_ENTRY') {
     return res.status(409).json({
-      error: 'Duplicate entry',
-      details: 'A country with this name already exists'
+      error: 'Duplicate entry'
     });
   }
 
   // Handle validation errors
   if (err.name === 'ValidationError') {
     return res.status(400).json({
-      error: 'Validation failed',
-      details: err.message
+      error: 'Validation failed'
     });
   }
 
-  // Default 500 error
+  // Default 500 error - match brief format exactly
   res.status(500).json({
-    error: 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { details: err.message })
+    error: 'Internal server error'
   });
 };
 
-// 404 handler
-module.exports.notFoundHandler = (req, res) => {
+// 404 handler - match brief format exactly
+export const notFoundHandler = (req, res) => {
   res.status(404).json({
-    error: 'Route not found',
-    details: `Cannot ${req.method} ${req.path}`
+    error: 'Route not found'
   });
 };

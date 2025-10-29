@@ -4,13 +4,35 @@ const generateSummaryImageHelper = require('./generateSummaryImageHelper')
 const processCountryData = require('./processCountryData')
 
 const refreshCountries = async () => {
-    try {
-        const [countries, exchangeRates] = await Promise.all([
-            fetchCountries(),
-            fetchExchangeRates()
-        ]);
+    // const [countries, exchangeRates] = await Promise.all([
+    //     fetchCountries(),
+    //     fetchExchangeRates()
+    // ]);
 
-        // Pass Date object directly - mysql2 will handle the conversion
+    let countries, exchangeRates;
+
+    try {
+        countries = await fetchCountries();
+    } catch (error) {
+        throw {
+            statusCode: 503,
+            error: 'External data source unavailable',
+            details: 'Could not fetch data from RestCountries API'
+        };
+    }
+
+    try {
+        exchangeRates = await fetchExchangeRates();
+    } catch (error) {
+        throw {
+            statusCode: 503,
+            error: 'External data source unavailable',
+            details: 'Could not fetch data from Exchange Rate API'
+        };
+    }
+
+    try {
+
         const currentTimestamp = new Date();
         const processedCountry = { inserted: 0, updated: 0, total: 0 };
 
@@ -32,7 +54,7 @@ const refreshCountries = async () => {
         return {
             message: 'Countries refreshed successfully',
             total_processed: processedCountry.total,
-            timestamp: currentTimestamp.toISOString() // For JSON response
+            timestamp: currentTimestamp.toISOString()
         };
 
     } catch (error) {
