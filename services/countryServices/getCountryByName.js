@@ -1,5 +1,7 @@
 const { getCountryByName } = require('../../models/countryModel');
 
-module.exports.getCountryByName = async (name) => {
-    return await getCountryByName(name)
+const getACountryByName = async (name) => {
+    return await getCountryByName(name);
 }
+
+module.exports = getACountryByName;

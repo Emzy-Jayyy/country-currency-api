@@ -79,7 +79,7 @@ module.exports.getAllCountries = async (filters = {}) => {
 }
 
 module.exports.getCountryByName = async (name) => {
-    const query = 'SELECT * countries WHERE LOWER(name) = LOWER(?)';
+    const query = 'SELECT * FROM countries WHERE LOWER(name) = LOWER(?)';
     const [rows] = await pool.execute(query, [name]);
     return rows[0] || null;
 }
@@ -104,7 +104,7 @@ module.exports.getTopCountriesByGDP = async (limit = 5) => {
     ORDER BY estimated_gdp DESC 
     LIMIT ?
   `;
-    const [rows] = await pool.execute(query, [limit]);
+    const [rows] = await pool.query(query, [limit]);
     return rows;
 };
 

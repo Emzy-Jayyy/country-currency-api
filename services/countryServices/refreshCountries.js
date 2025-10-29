@@ -1,5 +1,6 @@
 const { upsertCountry, updateLastRefreshed } = require('../../models/countryModel');
 const { fetchCountries, fetchExchangeRates } = require('../../services/externalApi');
+const generateSummaryImageHelper = require('./generateSummaryImageHelper')
 const processCountryData = require('./processCountryData')
 
 const refreshCountries = async () => {
@@ -25,6 +26,8 @@ const refreshCountries = async () => {
         }
 
         await updateLastRefreshed(currentTimestamp);
+
+        await generateSummaryImageHelper();
 
         return {
             message: 'Countries refreshed successfully',

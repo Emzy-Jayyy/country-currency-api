@@ -1,7 +1,7 @@
 // const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const refreshCountries = require('../services/countryServices/refreshCountries');
 const getCountries = require('../services/countryServices/getCountries');
-const getCountryByName = require('../services/countryServices/getCountryByName');
+const getACountryByName = require('../services/countryServices/getCountryByName');
 const deleteCountry = require('../services/countryServices/deleteCountry');
 const getStatus = require('../services/countryServices/getStatus');
 const { getImagePath, imageExists } = require('../services/imageService')
@@ -32,7 +32,7 @@ module.exports.getCountries = async (req, res, next) => {
 
 module.exports.getCountryByName = async (req, res, next) => {
     try {
-        const country = await getCountryByName(req.params.name);
+        const country = await getACountryByName(req.params.name);
 
         if (!country) {
             return res.status(404).json({
@@ -73,14 +73,19 @@ module.exports.getStatus = async (req, res, next) => {
 
 module.exports.getImage = async (req, res, next) => {
     try {
-        if (!imageExists()) {
-      return res.status(404).json({
-        error: 'Summary image not found'
-      });
-    }
+        // if (!imageExists()) {
+        //     console.log('Image not found, generating...');
+        //     await generateSummaryImageHelper();
+        // }
 
-    const imagePath = getImagePath();
-    res.sendFile(imagePath)
+        if (!imageExists()) {
+            return res.status(404).json({
+                error: 'Summary image not found'
+            });
+        }
+
+        const imagePath = getImagePath();
+        res.sendFile(imagePath)
     } catch (error) {
         next(error);
     }

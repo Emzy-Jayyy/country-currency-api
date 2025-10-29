@@ -5,7 +5,7 @@ const path = require('path');
 module.exports.generateSummaryImage = async (data) => {
     const { totalCountries, topCountries, lastRefreshed } = data;
     // Create canvas
-    const width = 800;
+    const width = 1000;
     const height = 600;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
@@ -56,9 +56,9 @@ module.exports.generateSummaryImage = async (data) => {
         ctx.fillText(country.name, 200, yPosition);
 
         ctx.fillStyle = '#86efac';
-        ctx.fillText(gdpFormatted, 500, yPosition);
+        ctx.fillText(gdpFormatted, 800, yPosition);
 
-        yPosition += 40;
+        yPosition += 60;
     });
 
     // Last refreshed timestamp

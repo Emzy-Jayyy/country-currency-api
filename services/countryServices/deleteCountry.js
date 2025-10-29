@@ -1,6 +1,6 @@
 const { deleteCountryByName } = require('../../models/countryModel');
 
-module.exports.deleteCountry = async (name) => {
+const deleteCountry = async (name) => {
     const deleted = await deleteCountryByName(name);
     if (!deleted) {
         throw {
@@ -10,3 +10,5 @@ module.exports.deleteCountry = async (name) => {
     }
     return { message: 'Country deleted successfully' };
 }
+
+module.exports = deleteCountry;

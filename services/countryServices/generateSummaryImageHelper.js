@@ -1,7 +1,7 @@
 const { getLastRefreshed, getTopCountriesByGDP, getTotalCount } = require('../../models/countryModel');
 const { generateSummaryImage } = require('../../services/imageService')
 
-module.exports.generateSummaryImageHelper = async () => {
+const generateSummaryImageHelper = async () => {
     try {
         const totalCountries = await getTotalCount();
         const topCountries = await getTopCountriesByGDP(5);
@@ -18,3 +18,5 @@ module.exports.generateSummaryImageHelper = async () => {
         console.error('Failed to generate summary image:', error.message);
     }
 }
+
+module.exports = generateSummaryImageHelper;
