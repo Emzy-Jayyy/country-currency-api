@@ -7,19 +7,27 @@ const setupDatabase = async () => {
     let connection;
 
     try {
-        connection = await mysql.createConnection({
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT || 3306,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-        });
+        // Use Railway variables first, fall back to custom env vars
+        const config = {
+            host: process.env.MYSQLHOST || process.env.DB_HOST,
+            port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
+            user: process.env.MYSQLUSER || process.env.DB_USER,
+            password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD
+        };
 
-        console.log('CONNECTED TO MySQL server');
+        console.log('Attempting to connect to MySQL server...');
+        console.log('Host:', config.host);
 
-        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\``);
-        console.log(`Database "${process.env.DB_NAME}" ensured`);
+        connection = await mysql.createConnection(config);
+        console.log('✅ CONNECTED TO MySQL server');
 
-        await connection.query(`USE \`${process.env.DB_NAME}\``);
+        // Get database name
+        const dbName = process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway';
+
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
+        console.log(`✅ Database "${dbName}" ensured`);
+
+        await connection.query(`USE \`${dbName}\``);
 
         await connection.query(`
             CREATE TABLE IF NOT EXISTS countries (
@@ -38,9 +46,8 @@ const setupDatabase = async () => {
                 INDEX idx_gdp (estimated_gdp)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
-        console.log('Countries table created');
+        console.log('✅ Countries table created');
 
-        // FIXED: Removed trailing comma after updated_at
         await connection.query(`
             CREATE TABLE IF NOT EXISTS app_settings (
                 key_name VARCHAR(255) PRIMARY KEY,
@@ -48,25 +55,26 @@ const setupDatabase = async () => {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         `);
+        console.log('✅ App settings table created');
 
         await connection.query(`
             INSERT INTO app_settings (key_name, value)
             VALUES ('last_refreshed_at', NULL)
             ON DUPLICATE KEY UPDATE key_name = key_name
         `);
-        console.log('App settings table created');
-        console.log('\nDatabase setup completed successfully');
+        console.log('✅ App settings initialized');
+
+        console.log('\n🎉 Database setup completed successfully!\n');
 
     } catch (error) {
-        console.error('Error setting up database:', error);
-        throw error; // Re-throw to see the actual error
+        console.error('❌ Error setting up database:', error.message);
+        process.exit(1);
     } finally {
         if (connection) {
             await connection.end();
         }
-
         process.exit(0);
     }
-}
+};
 
 setupDatabase();
