@@ -3,6 +3,10 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+if (!process.env.MYSQLHOST) {
+    dotenv.config();
+}
+
 const pool = mysql.createPool({
     host: process.env.MYSQLHOST || process.env.DB_HOST,
     port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
