@@ -17,8 +17,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const setupRoute = require('./routes/setupRoute');
-app.use('/', setupRoute);
+// const setupRoute = require('./routes/setupRoute.js');
+// app.use('/', setupRoute);
 
 app.get('/', (req, res, next) => {
     res.json({
