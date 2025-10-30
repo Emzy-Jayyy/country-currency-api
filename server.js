@@ -17,6 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const setupRoute = require('./routes/setupRoute');
+app.use('/', setupRoute);
+
 app.get('/', (req, res, next) => {
     res.json({
         message: 'Country Currency & Exchange API',
@@ -37,7 +40,7 @@ app.get('/status', getStatus);
 
 app.use('/countries', countryRoutes);
 
-app.use(notFoundHandler); 
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
